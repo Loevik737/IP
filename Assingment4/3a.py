@@ -3,9 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
+#imports the image as an array
 img = Image.open('images/fishingboat.tiff')
 img = np.array(img)
 
+#function that returns the inverted image by subtrakting the old pixel values from the highest value it could have.
+#the np.iinfo(np.uint8).max can be changed for different images
 def transform(img):
     pk = np.iinfo(np.uint8).max
     for i in range(0,img.shape[0]):

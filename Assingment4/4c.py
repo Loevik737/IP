@@ -5,26 +5,29 @@ import math as m
 from PIL import Image
 from scipy import signal
 
-img = Image.open('images/girl.tiff')
+#importing image as array
+img = Image.open('images/elaine.tiff')
 img = np.array(img,dtype=np.float32)
 
-plt.figure()
-plt.imshow(img, cmap=plt.cm.gray)
-plt.show()
-
+#function that is later used to pad the image
 def pad(vec,width,iaxis,kwargs):
     vec[:width[0]] = 0
     vec[-width[1]:] = 0
     return  vec
 
+#declaring and rotating the kernel for horizontal gradient
 kernel = np.array([[-1,0,1],[-2,0,2],[-1,0,1]])
 kernel = np.rot90(kernel,2)
 
+#declaring adn rotating the kernel for vertical gradient
 kernel2 = np.array([[-1,-2,-1],[0,0,0],[1,2,1]])
 kernel2 = np.rot90(kernel2,2)
+
+#padding the image
 pad_width = m.floor(float(kernel.shape[0])/2)
 img = np.lib.pad(img,pad_width,pad)
 
+#function that returns the image after its convoluted. The scalar can be used for fore example averaging
 def convolute(img,kernel,pad_width,scalar):
     retImg = np.zeros((img.shape[0],img.shape[1]),'float32')
     for i in range(pad_width,img.shape[0]-pad_width):
@@ -36,6 +39,8 @@ def convolute(img,kernel,pad_width,scalar):
             retImg[i][j] = val/scalar
     return retImg
 
+#the magnitude of the image isreturned by using the horizontal and vertical gradients in the
+# formula m.sqrt((hor[i][j]**2)+(vert[i][j]**2))
 def getMagnitude(hor,vert):
     retImg = np.zeros((hor.shape[0],hor.shape[1]),'float32')
     for i in range(pad_width,hor.shape[0]-pad_width):
@@ -48,4 +53,8 @@ vert = convolute(img,kernel2,pad_width,256.0)
 
 plt.figure()
 plt.imshow(getMagnitude(hor,vert), cmap=plt.cm.gray)
+plt.show()
+plt.imshow(hor, cmap=plt.cm.gray)
+plt.show()
+plt.imshow(vert, cmap=plt.cm.gray)
 plt.show()
